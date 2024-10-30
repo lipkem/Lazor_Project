@@ -14,7 +14,7 @@
   # Output should be the grid (in an array/matrix), the block types and location, the laser locations and directions, and the target locations
 
 # Solving the Puzzle
-   Determine possible laser paths
-   Determine possible location of blocks to achieve laser path
-   Determine blocks necessary to direct laser to coordinate
-   Iterate for each laser target
+  ## Determine possible laser paths
+  ## Determine possible location of blocks to achieve laser path
+  ## Determine blocks necessary to direct laser to coordinate
+  ## Iterate for each laser target
