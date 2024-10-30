@@ -17,4 +17,4 @@
   ### Determine possible laser paths
   ### Determine possible location of blocks to achieve laser path
   ### Determine blocks necessary to direct laser to coordinate
-  ### Iterate for each laser target
+  ### Iterate for each lazer target
