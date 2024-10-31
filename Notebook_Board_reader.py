@@ -1,24 +1,10 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[ ]:
-
-
-
-
-
-# In[53]:
-
 
 #This is a script to read the bff board file and convert it into a format that the solver can handle
 #first we open the board
 #orig_board = open('dark_1.bff')
 
-#content = orig_board.read()
-
 #importing numpy package for the array handling and math features we anticipate using
 import numpy as np
-
 
 #opening the bff board file, and reading its contents into a string called "content"
 with open('dark_1.bff') as orig_board:
@@ -44,7 +30,6 @@ for i, line in enumerate(list_by_line):
 
 if start_index is not None and stop_index is not None:
         orig_grid_layout = [line.replace(' ', '') for line in list_by_line[start_index + 1:stop_index]]  # Remove spaces
-    #orig_grid_layout = list_by_line[start_index + 1:stop_index]  # +1 to skip "GRID START"
 else:
     orig_grid_layout = []  # Handle the case where the lines aren't found
 
@@ -64,8 +49,6 @@ else:
 
 grid_for_solving = [['o' for _ in range(max_width)] for _ in range(height)]
 
-#print(grid_for_solving)
-
 for row in range(len(orig_grid_layout)):
     for col in range(len(orig_grid_layout[row])):
         grid_for_solving[row * 2][col * 2] = orig_grid_layout[row][col]
@@ -73,31 +56,10 @@ for row in range(len(orig_grid_layout)):
 #converting it to a numpy array 
 grid_for_solving_array = np.array(grid_for_solving, dtype=object)
 
-#orig_grid = []
-
-
-#grid_line_start= content.index("GRID START")
-#grid_line_stop= content.index("GRID STOP")
-
-
-#print(content)
-'''print(grid_line_start)
-print(grid_line_stop)
-print(list_by_line)'''
 print(orig_grid_layout)
-#print(len(orig_grid_layout))
-#print(grid_for_solving)
 print(grid_for_solving_array)
 
 
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
 
 
 
