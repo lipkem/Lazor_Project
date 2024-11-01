@@ -1,0 +1,98 @@
+import numpy as np
+import re
+
+'''
+The Orig_Board_Processor class takes the original bff file 
+provided by the puzzle and then does two things so far:
+1- expands the original provided grid so that there is twice the number of spaces
+    - The odd columns and rows are positions that can be ocupied by blocks.
+    - The even columns and rows are positions taht lasors can bounce off. 
+
+2- finds the number of allowed blocks of each type
+
+
+
+'''
+
+class Orig_Board_Processor:
+    def __init__(self, filename):
+        self.filename = filename
+        self.list_by_line = []
+        self.orig_grid_layout = []
+        self.grid_for_solving_array = np.array([])
+        self.number_of_A = 0
+        self.number_of_B = 0
+        self.number_of_C = 0
+
+    def read_file(self):
+        """Read the BFF board file and store lines in a list."""
+        with open(self.filename) as orig_board:
+            content = orig_board.read()
+            self.list_by_line = content.strip().split('\n')
+
+    def extract_grid(self):
+        """Extract the grid layout from the content."""
+        start_index, stop_index = self.find_grid_indices()
+
+        if start_index is not None and stop_index is not None:
+            self.orig_grid_layout = [line.replace(' ', '') for line in self.list_by_line[start_index + 1:stop_index]]
+        else:
+            self.orig_grid_layout = []  # Handle the case where the lines aren't found
+
+    def find_grid_indices(self):
+        """Find the start and stop indices for the grid."""
+        start_index = stop_index = None
+        for i, line in enumerate(self.list_by_line):
+            if "GRID START" in line:
+                start_index = i
+            elif "GRID STOP" in line:
+                stop_index = i
+        return start_index, stop_index
+
+    def create_solving_grid(self):
+        """Create the grid for solving based on the original layout."""
+        if self.orig_grid_layout:
+            max_width = 2 * len(self.orig_grid_layout[0])
+            height = 2 * len(self.orig_grid_layout)
+            grid_for_solving = [['o' for _ in range(max_width)] for _ in range(height)]
+
+            for row in range(len(self.orig_grid_layout)):
+                for col in range(len(self.orig_grid_layout[row])):
+                    grid_for_solving[row * 2][col * 2] = self.orig_grid_layout[row][col]
+
+            self.grid_for_solving_array = np.array(grid_for_solving, dtype=object)
+
+    def count_blocks(self):
+        """Count the allowed number of blocks of each type (A, B, C)."""
+        start_index, _ = self.find_grid_indices()
+        for line in self.list_by_line[start_index:]:
+            if line.startswith('A'):
+                self.number_of_A = self.extract_number(line)
+            elif line.startswith('B'):
+                self.number_of_B = self.extract_number(line)
+            elif line.startswith('C'):
+                self.number_of_C = self.extract_number(line)
+
+    def extract_number(self, line):
+        """Extract the number following the block type from the line."""
+        match = re.search(r'(\w)\s*(\d+)', line)
+        return int(match.group(2)) if match else 0
+
+    def display_results(self):
+        """Display the results of the processing."""
+        print(f'Number of A blocks: {self.number_of_A}')
+        print(f'Number of B blocks: {self.number_of_B}')
+        print(f'Number of C blocks: {self.number_of_C}')
+        print('Original grid layout:', self.orig_grid_layout)
+        print('Grid for solving array:\n', self.grid_for_solving_array)
+
+def main():
+    processor = Orig_Board_Processor('numbered_6.bff')
+    processor.read_file()
+    processor.extract_grid()
+    processor.create_solving_grid()
+    processor.count_blocks()
+    processor.display_results()
+
+if __name__ == '__main__':
+    main()
