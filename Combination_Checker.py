@@ -215,3 +215,5 @@ class Solution:
                 self.move_lazor(l_upd)
         else:
             return None
+
+
