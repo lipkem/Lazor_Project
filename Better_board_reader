@@ -134,7 +134,33 @@ class Orig_Board_Processor:
     
         # if not self.lazors:
         #     print("No lazors found after GRID STOP.")
+    def extract_targets(self):
+        #This will take the targets for the lazors outlined in the bff file and put them into a list of lists 
+        stop_index, _ = self.find_grid_indices()
+        target_index = 0
+        for line in self.list_by_line[stop_index:]:
+            if line.startswith('P'):
+                target_index+1
 
+        stop_index, _ = self.find_grid_indices()
+        self.targets = []  # Initialize the targets list
+        target_found = False
+
+        for line in self.list_by_line[stop_index:]:
+            if line.startswith('P'):
+                # Split the line to get the numbers following 'L'
+                numbers = list(map(int, line[1:].strip().split()))
+                if len(numbers) == 2:  # Ensure exactly 2 numbers are present
+                    self.targets.append(numbers)  # Add the list of 2 numbers to target
+                else:
+                    print(f"Warning: Expected 2 numbers after 'P', found {len(numbers)} in line: {line}")
+            elif self.targets:
+                # Stop collecting if we hit a line that doesn't start with 'L' after finding the first 'L'
+                break
+
+        if not self.targets:
+            print("No targets found after GRID STOP.")
+            
     def display_results(self):
         """Display the results of the processing."""
         print(f'Number of A blocks: {self.number_of_A}')
@@ -143,6 +169,7 @@ class Orig_Board_Processor:
         print('Original grid layout:', self.orig_grid_layout)
         print('Grid for solving array:\n', self.grid_for_solving_array)
         print('Lazors:', self.lazors)
+        print('Targets:', self.targets)
 
 def main():
     processor = Orig_Board_Processor('dark_1.bff')
@@ -151,6 +178,7 @@ def main():
     processor.create_solving_grid()
     processor.count_blocks()
     processor.extract_lazors()
+    processor.extract_targets()
     processor.display_results()
     
 
