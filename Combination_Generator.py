@@ -1,196 +1,160 @@
-# Import packages
-from itertools import combinations
-from PIL import Image, ImageDraw #will only need this if we decide to generate an image
-import time
+# from itertools import permutations, product
+# from itertools import permutations
+# import numpy as np
+
+# # Define the initial 2D matrix
+# matrix = np.array([
+#     ['o', 'x', 'o', 'o', 'o'],
+#     ['o', 'o', 'x', 'o', 'o'],
+#     ['x', 'o', 'o', 'o', 'o'],
+#     ['x', 'o', 'o', 'o', 'o'],
+#     ['x', 'o', 'o', 'o', 'o']
+# ])
+
+# # Define the exact occurrences for "A", "B", and "C"
+# exact_counts = {"A": 1, "B": 1, "C": 1}
+
+# # Find the positions of all "o" elements in the matrix
+# o_positions = [(i, j) for i in range(len(matrix))
+#                for j in range(len(matrix[0])) if matrix[i][j] == 'o']
+
+# # Calculate the total number of "o" slots and create the exact combination list
+# total_o_slots = len(o_positions)
+# required_chars = (
+#     ["A"] * exact_counts["A"] +
+#     ["B"] * exact_counts["B"] +
+#     ["C"] * exact_counts["C"] +
+#     # Fill remaining slots with "o"
+#     ['o'] * (total_o_slots - sum(exact_counts.values()))
+# )
+
+# # Generate all unique permutations of the required characters
+# unique_combinations = set(permutations(required_chars))
+
+# # Apply each valid combination to create new versions of the matrix
+# results = []
+# for combo in unique_combinations:
+#     # Create a deep copy of the original matrix
+#     temp_matrix = [row[:] for row in matrix]
+#     # Replace "o" positions with elements from the combination
+#     for (i, j), value in zip(o_positions, combo):
+#         temp_matrix[i][j] = value
+#     results.append(temp_matrix)
+
+# # Print results
+# for result in results:
+#     for row in result:
+#         print(row)
+#     print()  # Separate different configurations
+
+#########
+# from itertools import permutations
+# from itertools import permutations, product
+# import numpy as np
+
+# # Initial matrix
+# matrix = np.array([
+#     ['o', 'x', 'o', 'o', 'o'],
+#     ['o', 'o', 'x', 'o', 'o'],
+#     ['x', 'o', 'o', 'o', 'o'],
+#     ['x', 'o', 'o', 'o', 'o'],
+#     ['x', 'o', 'o', 'o', 'o']
+# ])
+
+# # Parameters for specific counts of A, B, and C
+# num_a = 1  # Example number of A's
+# num_b = 1  # Example number of B's
+# num_c = 1  # Example number of C's
+
+# # Step 1: Identify odd-indexed 'o' positions
+# odd_positions = []
+# for row in range(matrix.shape[0]):
+#     for col in range(matrix.shape[1]):
+#         if row % 2 == 1 and col % 2 and matrix[row, col] == 'o':
+#             odd_positions.append((row, col))
+
+# # Check if the number of required positions matches with counts of A, B, and C
+# if len(odd_positions) < num_a + num_b + num_c:
+#     print("Not enough odd 'o' positions to place all A, B, and C items.")
+# else:
+#     # Step 2: Generate the list of items to place
+#     items = ['A'] * num_a + ['B'] * num_b + ['C'] * num_c
+
+#     # Step 3: Generate all unique permutations of these items in the odd positions
+#     unique_combinations = set(permutations(items))
+
+#     # Step 4: Generate matrices for each unique combination
+#     result_matrices = []
+#     for combo in unique_combinations:
+#         # Create a copy of the matrix to apply this combination
+#         new_matrix = matrix.copy()
+#         for pos, item in zip(odd_positions, combo):
+#             new_matrix[pos] = item
+#         result_matrices.append(new_matrix)
+
+# # Display result
+# for i, result in enumerate(result_matrices):
+#     print(f"Combination {i+1}:\n{result}\n")
+#     combinations = []
+#     combinations.append(i)
 
 
-class Lazor:
-    '''
-        This class estimates all possible combinations to find the solution
-        Step 1: Sorting A blocks in possible 'o' positions to get all
-                combinations
-        Step 2: With leftover o positions, do similar combination search
-                for B, C
-        Step 3: Create possible combinations of A, B, C with available
-                'o' positions and locked blocks within the grid
-    '''
+############################
+from itertools import permutations
+from itertools import permutations, product
+import numpy as np
 
-    def __init__(self, dataset1, dataset2):
-        '''
-        The __init__ method will utilize the dictionaries created from
-        class Input and initialize all the extracted information as variables.
-        #THESE NEED TO BE MODIFIED IN ORDER TO WORK WITH MARK'S CODE
+# Initial matrix
+matrix = np.array([
+    ['o', 'x', 'o', 'o', 'o'],
+    ['o', 'o', 'x', 'o', 'o'],
+    ['x', 'o', 'o', 'o', 'o'],
+    ['x', 'o', 'o', 'o', 'o'],
+    ['x', 'o', 'o', 'o', 'o']
+])
 
-        **Input Parameters** 
-        #MIGHT NEED TO DESIGN CODE TO GET THESE TWO DATASETS AFTER MARKS CODE
-            dataset1: *dict*
-                The dictionary with following attributes
-                size of the grid, lazors, points of intersection,
-                and number of blocks (A, B, C)
-            dataset2: *dict*
-                The dictionary with following attributes
-                size of the grid, individual lists of blocks
-                and no-movement positions
-        **Returns**
-            None
+# Parameters for specific counts of A, B, and C
+num_a = 2  # Example number of A's
+num_b = 0  # Example number of B's
+num_c = 0  # Example number of C's
 
-        '''
-        self.o_l = dataset1['o_l'] #Defines grid
-        self.size = dataset1['Size'] #Defines size of grid as [x ,y]
-        self.lazers = dataset1['Lazers'] #Defines positions and directions of lazers
-        self.points = dataset1['Points'] #Defines points of intersections
-        self.A = dataset1['A'] #Defines fixed reflect block
-        self.B = dataset1['B'] #Defines fixed opaque block
-        self.C = dataset1['C'] #Defines fixed refract block
-        self.dataset2 = dataset2
+# Step 1: Identify odd-indexed 'o' positions
+odd_positions = []
+for row in range(matrix.shape[0]):
+    for col in range(matrix.shape[1]):
+        if row % 2 == 1 and col % 2 == 1 and matrix[row, col] == 'o':
+            odd_positions.append((row, col))
 
-#THESE NEED TO BE MODIFIED IN ORDER TO WORK WITH MARK'S CODE
-    
-    def __call__(self):
-        '''
-        The __call__ method will return the right combination
-        of coordinates of different blocks
+# print(odd_positions)
 
-        **Input Parameters**
-            None
-        **Returns**
-            sel_comb: *dict, list, int*
-                The right combination of coordinates of different blocks
-        '''
-        # All possible combinations of A in 'o' positions
-        o_lA = list(combinations(self.o_l, self.A))
-        # For every A block
-        for i_a in o_lA:
-            # Sorting the available 'o' positions, A combinations
-            o_l, a_comb = self.new_sort("a_comb", self.o_l, list(i_a))
-            # Possible combinations of B with new o positions
-            # (after A block is fixed)
-            o_lB = list(combinations(self.o_l, self.B))
-            # For every B block
-            for i_b in o_lB:
-                # Sorting the available 'o' positions, B combinations
-                o_l, b_comb = self.new_sort("b_comb", self.o_l, list(i_b))
-                # Possible combinations of C with new 'o' positions
-                # (after A, B blocks fixed)
-                o_lC = list(combinations(self.o_l, self.C))
-                # For every C block
-                for i_c in o_lC:
-                    # Sorting the available 'o' positions, C combinations
-                    o_l, c_comb = self.new_sort("c_comb", self.o_l, list(i_c))
+# Check if the number of required positions matches with counts of A, B, and C
+if len(odd_positions) < num_a + num_b + num_c:
+    print("Not enough odd 'o' positions to place all A, B, and C items.")
+else:
+    # Step 2: Generate the list of items to place
+    items = ['A'] * num_a + ['B'] * num_b + ['C'] * num_c
 
-                    # Selecting a set of different coordinates amongst
-                    # all possible combinations
-                    sel_comb = self.set_abc(
-                        [a_comb, b_comb, c_comb], ['A', 'B', 'C'])
+print(items)
 
-                    # Testing the selected combination under class Solution
-                    test_comb = Solution(
-                        sel_comb,
-                        self.lazers,
-                        self.points,
-                        self.dataset2,
-                        self.size)
+# Step 3: Generate all unique permutations of these items in the odd positions
+unique_combinations = set(permutations(items))
 
-                    # If true, return the right combination
-                    # of coordinates of different blocks
-                    if test_comb():
-                        return sel_comb
-                    # Else test the next possible combination
-                    o_l, c_comb = self.rearrange(
-                        c_comb, o_l, self.C, list(i_c), "C")
-                o_l, b_comb = self.rearrange(
-                    b_comb, o_l, self.B, list(i_b), "B")
-            o_l, a_comb = self.rearrange(a_comb, o_l, self.A, list(i_a), "A")
+# Step 4: Store matrices for each unique combination in a list
+result_matrices = []
+for combo in unique_combinations:
+    # Create a copy of the matrix to apply this combination
+    new_matrix = matrix.copy()
+    for pos, item in zip(odd_positions, combo):
+        new_matrix[pos] = item
+        result_matrices.append(new_matrix)
 
-    def set_abc(self, block_positions, name):
-        '''
-        This function will create a new dictionary with A, B, C
-        combinations
+print(result_matrices)
 
-        **Input Parameters**
-            block_positions: *list, int*
-                The list with positions of a specific block
-            name: *list, int*
-                The name of the specific block
-        **Returns**
-            sel_comb: *dict, list, int*
-                An updated dictionary with A, B, C combinations
-        '''
-        sel_comb = {}
-        for j in range(len(block_positions)):
-            # Accessing each position
-            block_position = block_positions[j]
-            for i in block_position:
-                # Creating a key, value pair
-                sel_comb[(i[0], i[1])] = name[j]
-        return sel_comb
+# result_matrices now contains all the matrices with unique combinations of A, B, and C in odd positions
 
-    def new_sort(self, list_name, o_l, list_elements):
-        '''
-        This function will update 'o' positions list
-        after every iteration in the combinations loop
-
-        **Input Parameters**
-            list_name: *str*
-                The name of the specific block
-            o_l: *list, int*
-                The 'o' positions list
-            list_elements: *list, int*
-                The specific block positions (A, B, or C)
-
-        **Returns**
-            o_l: *list, int*
-                The 'o' positions list
-            vars()[list_name]: *variable name*
-                The name of the specific block
-        '''
-        # Creating a list with the variable name
-        vars()[list_name] = []
-        # extending the list with specific block positions
-        (vars()[list_name]).extend(list_elements)
-        # For A, B blocks
-        if not list_name == 'c_comb':
-            for item in list_elements:
-                # Try and except for removing elements
-                try:
-                    o_l.remove(item)
-                except BaseException:
-                    pass
-        return o_l, vars()[list_name]
-
-    def rearrange(self, block_list, o_l, number, extend_list, alphabet):
-        '''
-        This function will rearrange the o_list and specific block list
-        by removing newly added positions. This new list will be used for
-        next iteration to find the right combination
-
-        **Input Parameters**
-            block_list: *list, int*
-                The list of specific block combinations with available
-                'o' positions
-            o_l: *list, int*
-                The 'o' positions list
-            number: *int*
-                The number of specific blocks for every iteration
-            extend_list: *list, int*
-                The positions of the block (A, B, C) from all combinations
-            alphabet: *str*
-                The name for the specific function
-
-        **Returns**
-            o_l: *list, int*
-                The updated o positions list
-            block_list: *list, int*
-                The updated list of specific block combinations
-        '''
-        # When there are specific blocks
-        if number != 0:
-            del block_list[-number:]
-            # Updating o positions list
-            if alphabet != "C":
-                o_l.extend(extend_list)
-        return o_l, block_list
-
+# Convert each matrix to a list of lists for a cleaner display
+formatted_matrices = [matrix.tolist() for matrix in result_matrices]
+# print(formatted_matrices)
 
 
 
