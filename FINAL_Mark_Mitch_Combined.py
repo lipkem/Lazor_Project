@@ -11,6 +11,10 @@ import re
 ####################################################################
 A = 'XXXXXXXXXXXX.bff'  #### PLEASE PUT FILE NAME IN PLACE OF Xs####
 ####################################################################
+#### Solution will be output in text file called solution.txt ######
+#### in addition to being printed on the display ###################
+####################################################################
+
 
 # Start the timer
 start_time = time.time()
