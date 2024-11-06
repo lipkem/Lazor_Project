@@ -558,4 +558,7 @@ execution_time = end_time - start_time
 print(f"Execution Time: {execution_time:.2f} seconds")
 print("Total unique configurations:", len(formatted_matrices))
 
-print(SOLUTION)
+Solution_copy = np.array(SOLUTION[1::2, 1::2])
+
+print("Solution Block Placements:")
+print(Solution_copy)
