@@ -9,7 +9,7 @@ import re
 
 
 ####################################################################
-A = 'XXXXXXXXX.bff' ##### PLEASE PUT FILE NAME IN PLACE OF Xs#######
+A = 'XXXXXXXXXXXX.bff'  # PLEASE PUT FILE NAME IN PLACE OF Xs#######
 ####################################################################
 
 # Start the timer
@@ -130,9 +130,6 @@ class Orig_Board_Processor:
                 else:
                     print(f"Warning: Expected 4 numbers after 'L', found {
                           len(numbers)} in line: {line}")
-            elif self.lazors:
-                # Stop collecting if we hit a line that doesn't start with 'L' after finding the first 'L'
-                break
 
         if not self.lazors:
             print("No lazors found after GRID STOP.")
@@ -178,9 +175,6 @@ class Orig_Board_Processor:
                 else:
                     print(f"Warning: Expected 2 numbers after 'P', found {
                           len(numbers)} in line: {line}")
-            elif self.targets:
-                # Stop collecting if we hit a line that doesn't start with 'L' after finding the first 'L'
-                break
 
         if not self.targets:
             print("No targets found after GRID STOP.")
