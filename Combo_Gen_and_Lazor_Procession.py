@@ -1,56 +1,87 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Nov  4 17:14:45 2024
 
-from itertools import permutations
+@author: mitchelllipke
+"""
+
+import time
+from itertools import permutations, combinations
 import numpy as np
+import copy
 
-# Initial matrix
-matrix = np.array([['o', 'o', 'o', 'o', 'o', 'o', 'o'],
-                   ['o', 'o', 'o', 'o', 'o', 'o', 'o'],
-                   ['o', 'o', 'o', 'o', 'o', 'o', 'o'],
-                   ['o', 'o', 't', 'o', 'o', 'o', 'o'],
-                   ['o', 'o', 'o', 'o', 'o', 'o', 'o'],
-                   ['o', 'o', 'o', 'o', 'o', 'o', 'o'],
-                   ['o', 'o', 'o', 'o', 'o', 'o', 'o']])
+# Start the timer
+start_time = time.time()
 
-# Parameters for specific counts of A, B, and C
-num_a = 2  # Example number of A's
-num_b = 1  # Example number of B's
-num_c = 1  # Example number of C's
-
-# Step 1: Identify odd-indexed 'o' positions
-odd_positions = []
-for row in range(matrix.shape[0]):
-    for col in range(matrix.shape[1]):
-        if row % 2 == 1 and col % 2 == 1 and matrix[row, col] == 'o':
-            odd_positions.append((row, col))
-
-# Check if the number of required positions matches with counts of A, B, and C
+# Define number of items to place
+num_a = 2
+num_b = 0
+num_c = 0
 total_items = num_a + num_b + num_c
+
+Lazors = [[2, 1, 1, -1]]
+Targets = [[3, 2]]
+
+
+# Initial matrix setup
+matrix = np.array([
+    ['o', 'o', 'o', 'o', 'o'],
+    ['o', 'o', 'o', 'o', 'o'],
+    ['o', 'o', 'o', 'o', 'o'],
+])
+
+
+# matrix = np.array([
+#     ['o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'],
+#     ['o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'],
+#     ['o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'],
+#     ['o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'],
+#     ['o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'],
+#     ['o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'],
+#     ['o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'],
+#     ['o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'],
+#     ['o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'],
+#     ['o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'],
+#     ['o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o']
+# ])
+
+
+# Step 1: Identify valid positions (e.g., odd-indexed positions)
+odd_positions = [(row, col) for row in range(matrix.shape[0]) for col in range(matrix.shape[1])
+                 if row % 2 == 1 and col % 2 == 1 and matrix[row, col] == 'o']
+
+# Check if there are enough valid positions
 if len(odd_positions) < total_items:
     print("Not enough odd 'o' positions to place all A, B, and C items.")
 else:
-    # Step 2: Generate the list of items to place, including placeholders if necessary
+    # Step 2: Generate the items list and corresponding position combinations
     items = ['A'] * num_a + ['B'] * num_b + ['C'] * num_c
-    placeholders_needed = len(odd_positions) - total_items
-    items += [''] * placeholders_needed  # Add empty strings as placeholders
+    position_combinations = combinations(odd_positions, total_items)
 
-    # Step 3: Generate all unique permutations of these items in the odd positions
-    unique_combinations = set(permutations(items))
-
-    # Step 4: Store matrices for each unique combination in a list
+    # Step 3: Generate and store matrices for each valid placement permutation
     result_matrices = []
-    for combo in unique_combinations:
-        # Create a copy of the matrix to apply this combination
-        new_matrix = matrix.copy()
-        for pos, item in zip(odd_positions, combo):
-            if item:  # Place only non-placeholder items
+    for positions in position_combinations:
+        # Generate all unique item arrangements for the chosen positions
+        for item_arrangement in set(permutations(items)):
+            # Copy the original matrix
+            new_matrix = matrix.copy()
+            # Place items in the selected positions
+            for pos, item in zip(positions, item_arrangement):
                 new_matrix[pos] = item
-        result_matrices.append(new_matrix)
+            result_matrices.append(new_matrix)
 
-# print(result_matrices)
-
+# Optional: Convert results to list format if needed
 formatted_matrices = np.array([matrix.tolist() for matrix in result_matrices])
-print(formatted_matrices)
-# print(len(formatted_matrices))
+
+# End the timer
+end_time = time.time()
+
+# Calculate and print the elapsed time
+execution_time = end_time - start_time
+print(f"Execution Time: {execution_time:.2f} seconds")
+print("Total unique configurations:", len(formatted_matrices))
+
 
 Combinations = formatted_matrices
 
@@ -72,29 +103,33 @@ Combinations = formatted_matrices
 # test_array = np.array([['o', 'o', 'o', 'o', 'o', 'o', 'o'],
 #                        ['o', 'o', 'o', 'o', 'o', 'o', 'o'],
 #                        ['o', 'o', 'o', 'o', 'o', 'o', 'o'],
-#                        ['o', 'o', 't', 'o', 'o', 'o', 'o'],
+#                        ['o', 'A', 'o', 'o', 'o', 'o', 'o'],
 #                        ['o', 'o', 'o', 'o', 'o', 'o', 'o'],
-#                        ['o', 'o', 'o', 'o', 'o', 'o', 'o'],
+#                        ['o', 'o', 'o', 'C', 'o', 'o', 'o'],
 #                        ['o', 'o', 'o', 'o', 'o', 'o', 'o']])
 
 
-Lazors = [[0, 1, 1, 1], [5, 0, -1, 1]]
-Targets = [[2, 3]]
-A = 1
-B = 1
-C = 1
+# Lazors = [[3, 2, -1, 1]]
+# Targets = [[6, 6]]
+# # L = [1, 0, 1, 1]
+# A = 1
+# B = 1
+# C = 1
 
-print(Lazors)
+count = 0
+
 for test_array in Combinations:
+
     lazor_array = np.array(  # Define an array that is the same as the combination board, this will be for lazor procession
         [['o']*test_array.shape[1]]*test_array.shape[0])
-    for n in Targets:  # Itterate over the targets, placing a t for every target on our lazor array
-        lazor_array[n[1]][n[0]] = 't'
+    temp_Lazors = copy.deepcopy(Lazors)
 
-    for L in Lazors:  # Cycle through the Lazors
+    for L in temp_Lazors:  # Cycle through the Lazors
         # Label Lasers as L on the array just created, not necessary but a good check, may end up erased if other laser crosses
+        # for test_array in Combinations:
+        for n in Targets:  # Itterate over the targets, placing a t for every target on our lazor array
+            lazor_array[n[1]][n[0]] = 't'
         lazor_array[L[1]][L[0]] = 'L'
-        print(L)
         while ([False] == [(L[0] <= 0) & (L[2] == -1)] and  # Checking x and vx to make sure we will not go over Left border
                # Checking x and vx to make sure we will not go over Left border
                [False] == [(L[0] >= (test_array.shape[1]-1)) & (L[2] == 1)] and
@@ -117,15 +152,17 @@ for test_array in Combinations:
                             L[3] *= -1
                         # If C block present, procede like o/x but also create new Lazer
                         elif test_array[L[1]+1][L[0]] == 'C':
-                            new_L = L  # Need to figure out what to do here
+                            new_L = L.copy()  # Need to figure out what to do here
                             # Need to figure out what to do with this laser
-                            new_L[3] = -L[3]
+                            new_L[3] *= -1
+                            temp_Lazors.append(new_L)
                             lazor_array[L[1]+1][L[0]+1] = '-'
                             L[0] += 1
                             L[1] += 1
                         # If B block present, send Lazer off the array, essentially ending the process
                         elif test_array[L[1]+1][L[0]] == 'B':
-                            L[0:1] = [-L[0]], [-L[1]]
+                            lazor_active = False  # Stop processing this Lazor
+                            break  # Break out of the inner loop for this Lazor
                     if L[3] == -1:  # If y vector is negative
                         # If block immediately above is open or 'x'
                         if test_array[L[1]-1][L[0]] == 'o' or test_array[L[1]+1][L[0]] == 'x':
@@ -138,15 +175,17 @@ for test_array in Combinations:
                             L[3] *= -1
                         # If C block present, procede like o/x but also create new Lazer
                         elif test_array[L[1]-1][L[0]] == 'C':
-                            new_L = L  # Need to figure out what to do here
+                            new_L = L.copy()  # Need to figure out what to do here
                             # Need to figure out what to do with this laser
-                            new_L[3] = -L[3]
+                            new_L[3] *= -1
+                            temp_Lazors.append(new_L)
                             lazor_array[L[1]-1][L[0]+1] = '-'
                             L[0] += 1
                             L[1] -= 1
                         # If B block present, send Lazer off the array, essentially ending the process
                         elif test_array[L[1]-1][L[0]] == 'B':
-                            L[0:1] = [-L[0]], [-L[1]]
+                            lazor_active = False  # Stop processing this Lazor
+                            break  # Break out of the inner loop for this Lazor
                 if L[2] == - 1:  # If x vector is negative
                     if L[3] == 1:  # If y vector is positive
                         # If block immediately beneath is open or 'x'
@@ -160,15 +199,17 @@ for test_array in Combinations:
                             L[3] *= -1
                         # If C block present, procede like o/x but also create new Lazer
                         elif test_array[L[1]+1][L[0]] == 'C':
-                            new_L = L  # Need to figure out what to do here
+                            new_L = L.copy()  # Need to figure out what to do here
                             # Need to figure out what to do with this laser
-                            new_L[3] = -L[3]
+                            new_L[3] *= -1
+                            temp_Lazors.append(new_L)
                             lazor_array[L[1]+1][L[0]-1] = '-'
                             L[0] += 1
                             L[1] += 1
                         # If B block present, send Lazer off the array, essentially ending the process
                         elif test_array[L[1]+1][L[0]] == 'B':
-                            L[0:1] = [-L[0]], [-L[1]]
+                            lazor_active = False  # Stop processing this Lazor
+                            break  # Break out of the inner loop for this Lazor
                     if L[3] == -1:  # If y vector is negative
                         # If block immediately below is open or 'x'
                         if test_array[L[1]-1][L[0]] == 'o' or test_array[L[1]+1][L[0]] == 'x':
@@ -181,15 +222,17 @@ for test_array in Combinations:
                             L[3] *= -1
                         # If C block present, procede like o/x but also create new Lazer
                         elif test_array[L[1]-1][L[0]] == 'C':
-                            new_L = L  # Need to figure out what to do here
+                            new_L = L.copy()  # Need to figure out what to do here
                             # Need to figure out what to do with this laser
-                            new_L[3] = -L[3]
+                            new_L[3] *= -1
+                            temp_Lazors.append(new_L)
                             lazor_array[L[1]-1][L[0]-1] = '-'
                             L[0] -= 1
                             L[1] -= 1
                         # If B block present, send Lazer off the array, essentially ending the process
                         elif test_array[L[1]-1][L[0]] == 'B':
-                            L[0:1] = [-L[0]], [-L[1]]
+                            lazor_active = False  # Stop processing this Lazor
+                            break  # Break out of the inner loop for this Lazor
             # If x cordinate is even (ie laser is on side of block)
             elif L[0] % 2 == 0:
                 if L[2] == 1:  # If x vector is positive
@@ -205,16 +248,17 @@ for test_array in Combinations:
                             L[2] *= -1
                         # If C block present, procede like o/x but also create new Lazer
                         elif test_array[L[1]][L[0]+1] == 'C':
-                            new_L = L  # Need to figure out what to do here
+                            new_L = L.copy()  # Need to figure out what to do here
                             # Need to figure out what to do with this laser
-                            new_L[2] = -L[2]
+                            new_L[2] *= -1
+                            temp_Lazors.append(new_L)
                             lazor_array[L[1]+1][L[0]+1] = '-'
                             L[0] += 1
                             L[1] += 1
                         # If B block present, send Lazer off the array, essentially ending the process
                         elif test_array[L[1]][L[0]+1] == 'B':
-                            # making them negative to stop the while loop
-                            L[0:1] = [-L[0]], [-L[1]]
+                            lazor_active = False  # Stop processing this Lazor
+                            break  # Break out of the inner loop for this Lazor
 
                     if L[3] == -1:  # If y vector is positive
                         # If block immediately right is open or 'x'
@@ -228,16 +272,17 @@ for test_array in Combinations:
                             L[2] *= -1
                         # If C block present, procede like o/x but also create new Lazer
                         elif test_array[L[1]][L[0]+1] == 'C':
-                            new_L = L  # Need to figure out what to do here
+                            new_L = L.copy()  # Need to figure out what to do here
                             # Need to figure out what to do with this laser
-                            new_L[2] = -L[2]
+                            new_L[2] *= -1
+                            temp_Lazors.append(new_L)
                             lazor_array[L[1]-1][L[0]+1] = '-'
                             L[0] += 1
                             L[1] -= 1
                         # If B block present, send Lazer off the array, essentially ending the process
                         elif test_array[L[1]][L[0]+1] == 'B':
-                            # making them negative to stop the while loop
-                            L[0:1] = [-L[0]], [-L[1]]
+                            lazor_active = False  # Stop processing this Lazor
+                            break  # Break out of the inner loop for this Lazor
                 if L[2] == -1:  # If x vector is negative
                     if L[3] == 1:  # If y vector is positive
                         # If block immediately left is open or 'x'
@@ -251,16 +296,17 @@ for test_array in Combinations:
                             L[2] *= -1
                         # If C block present, procede like o/x but also create new Lazer
                         elif test_array[L[1]][L[0]-1] == 'C':
-                            new_L = L  # Need to figure out what to do here
+                            new_L = L.copy()  # Need to figure out what to do here
                             # Need to figure out what to do with this laser
-                            new_L[2] = -L[2]
+                            new_L[2] *= -1
+                            temp_Lazors.append(new_L)
                             lazor_array[L[1]+1][L[0]-1] = '-'
                             L[0] -= 1
                             L[1] += 1
                         # If B block present, send Lazer off the array, essentially ending the process
                         elif test_array[L[1]][L[0]-1] == 'B':
-                            # making them negative to stop the while loop
-                            L[0:1] = [-L[0]], [-L[1]]
+                            lazor_active = False  # Stop processing this Lazor
+                            break  # Break out of the inner loop for this Lazor
 
                     if L[3] == -1:  # If y vector is negative
                         # If block immediately right is open or 'x'
@@ -274,19 +320,25 @@ for test_array in Combinations:
                             L[2] *= -1
                         # If C block present, procede like o/x but also create new Lazer
                         elif test_array[L[1]][L[0]-1] == 'C':
-                            new_L = L  # Need to figure out what to do here
+                            new_L = L.copy()  # Need to figure out what to do here
                             # Need to figure out what to do with this laser
-                            new_L[2] = -L[2]
+                            new_L[2] *= -1
+                            temp_Lazors.append(new_L)
                             lazor_array[L[1]-1][L[0]-1] = '-'
                             L[0] -= 1
                             L[1] -= 1
                         # If B block present, send Lazer off the array, essentially ending the process
                         elif test_array[L[1]][L[0]-1] == 'B':
-                            # making them negative to stop the while loop
-                            L[0:1] = [-L[0]], [-L[1]]
+                            lazor_active = False  # Stop processing this Lazor
+                            break  # Break out of the inner loop for this Lazor
+
+    count += 1
+    print(count)
 
     if "t" in lazor_array:
         print("not a solution")
     else:
         print("Solution Found")
         print(lazor_array)
+        print(test_array)
+
