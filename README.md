@@ -1,6 +1,6 @@
 # Lazor Project
 
-This Python project provides a set of tools to analyze and visualize data related to healthcare metrics. The tool can process large CSV datasets, perform statistical analysis, and generate visualizations.
+This Python project provides a simple code that takes a bff imput file that represents the elements of a level in a game of Lazors and outputs a solution in the form of a text file with a grid of A blocks (reflection blocks), B blocks (opaque blocks), and C blocks (refraction blocks).  
 
 ## Installation
 
