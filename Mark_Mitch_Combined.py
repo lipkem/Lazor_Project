@@ -1,37 +1,37 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Mon Nov  4 17:14:45 2024
 
-@author: mitchelllipke
-"""
-
-import re
-import time
-from itertools import permutations, combinations
-import numpy as np
 import copy
+import numpy as np
+from itertools import permutations, combinations
+import time
+import re
+
+
+####################################################################
+A = 'XXXXXXXXX.bff' ##### PLEASE PUT FILE NAME IN PLACE OF Xs#######
+####################################################################
 
 # Start the timer
 start_time = time.time()
 
 
 '''
-The Orig_Board_Processor class takes the original bff file 
+The Orig_Board_Processor class takes the original bff file
 provided by the puzzle and then does two things so far:
 1- expands the original provided grid so that there is twice the number of spaces
     - x's in the original grid represent positions that cannot be occupied by blocks of any type
     - the laser can traverse any position other than opaque blocks (B blocks)
     - The odd columns and rows are positions that can be ocupied by blocks.
-    - The even columns and rows are positions taht lasors can bounce off. 
+    - The even columns and rows are positions taht lasors can bounce off.
 
 2- finds the number of allowed blocks of each type
     - It looks for the part of the file that starts with A, B or C AFTER the GRID STOP language
     - the blocks in the grid are to be considered fixed in their position
     - the blocks identified by the "A,B or C" after the GRID STOP language are to be considered movable versions
     - The number of blocks identified after the grid do not include the fixed blocks in the grid itself. Example
-    being showstopper 4- there isa fixed B block as well as 3 additional movable B blocks. 
-    
+    being showstopper 4- there isa fixed B block as well as 3 additional movable B blocks.
+
 3- finds the lasers in the bff file and reads them into a list of lists
 
 
@@ -197,7 +197,7 @@ class Orig_Board_Processor:
 
 
 def main():
-    processor = Orig_Board_Processor('yarn_5.bff')
+    processor = Orig_Board_Processor(A)
     processor.read_file()
     processor.extract_grid()
     processor.create_solving_grid()
@@ -307,32 +307,36 @@ Combinations = formatted_matrices
 # C = 1
 
 count = 0
-
 for test_array in Combinations:
-
     lazor_array = np.array(  # Define an array that is the same as the combination board, this will be for lazor procession
         [['o']*test_array.shape[1]]*test_array.shape[0])
     temp_Lazors = copy.deepcopy(Lazors)
-
+    for n in Targets:  # Itterate over the targets, placing a t for every target on our lazor array
+        lazor_array[n[1]][n[0]] = 't'
     for L in temp_Lazors:  # Cycle through the Lazors
         # Label Lasers as L on the array just created, not necessary but a good check, may end up erased if other laser crosses
         # for test_array in Combinations:
-        for n in Targets:  # Itterate over the targets, placing a t for every target on our lazor array
-            lazor_array[n[1]][n[0]] = 't'
         lazor_array[L[1]][L[0]] = 'L'
-        while ([False] == [(L[0] <= 0) & (L[2] == -1)] and  # Checking x and vx to make sure we will not go over Left border
+        step_counter = 0
+        while (([False] == [(L[0] <= 0) & (L[2] == -1)]) and  # Checking x and vx to make sure we will not go over Left border
                # Checking x and vx to make sure we will not go over Left border
-               [False] == [(L[0] >= (test_array.shape[1]-1)) & (L[2] == 1)] and
-               # Checking y and vy to make sure we will not go over top border
-               [False] == [(L[1] <= 0) & (L[3] == -1)] and
+               ([False] == [(L[0] >= (test_array.shape[1]-1)) & (L[2] == 1)]) and
+               # Checking x and vx to make sure we will not go over top border
+               ([False] == [(L[1] <= 0) & (L[3] == -1)]) and
                # Checking y and vy to make sure we will not go over bottom border
-               [False] == [(L[1] >= (test_array.shape[0]-1)) & (L[3] == 1)]):
+               ([False] == [(L[1] >= (test_array.shape[0]-1)) & (L[3] == 1)]) and
+               # Aribitaily allow 50 Lazor steps
+               (step_counter <= 50) and
+               (len(temp_Lazors) <= 50)):  # Limit new Lazor creations (ie refractions)
             # If y is even (ie the laser is currently on top of a box, not on the side)
+            step_counter += 1
+            print("Checking " + str(count) + " out of " +
+                  str(len(formatted_matrices)))
             if L[1] % 2 == 0:
                 if L[2] == 1:  # If x vector is positive
                     if L[3] == 1:  # If y vector is positive
                         # If block immediately beneath is open or 'x'
-                        if test_array[L[1]+1][L[0]] == 'o' or test_array[L[1]+1][L[0]] == 'x':
+                        if (test_array[L[1]+1][L[0]] == 'o' or test_array[L[1]+1][L[0]] == 'x'):
                             # Change next laser path box to '-', considered hit
                             lazor_array[L[1]+1][L[0]+1] = '-'
                             L[0] += 1  # Move laser to new location
@@ -349,13 +353,14 @@ for test_array in Combinations:
                             lazor_array[L[1]+1][L[0]+1] = '-'
                             L[0] += 1
                             L[1] += 1
+
                         # If B block present, send Lazer off the array, essentially ending the process
                         elif test_array[L[1]+1][L[0]] == 'B':
                             lazor_active = False  # Stop processing this Lazor
                             break  # Break out of the inner loop for this Lazor
                     if L[3] == -1:  # If y vector is negative
                         # If block immediately above is open or 'x'
-                        if test_array[L[1]-1][L[0]] == 'o' or test_array[L[1]-1][L[0]] == 'x':
+                        if (test_array[L[1]-1][L[0]] == 'o' or test_array[L[1]-1][L[0]] == 'x'):
                             # Change next laser path box to '-', considered hit
                             lazor_array[L[1]-1][L[0]+1] = '-'
                             L[0] += 1  # Move laser to new location
@@ -372,6 +377,7 @@ for test_array in Combinations:
                             lazor_array[L[1]-1][L[0]+1] = '-'
                             L[0] += 1
                             L[1] -= 1
+
                         # If B block present, send Lazer off the array, essentially ending the process
                         elif test_array[L[1]-1][L[0]] == 'B':
                             lazor_active = False  # Stop processing this Lazor
@@ -379,6 +385,7 @@ for test_array in Combinations:
                 if L[2] == - 1:  # If x vector is negative
                     if L[3] == 1:  # If y vector is positive
                         # If block immediately beneath is open or 'x'
+                        # or L[1] == (test_array.shape[0]-2) or L[0] == 1:
                         if test_array[L[1]+1][L[0]] == 'o' or test_array[L[1]+1][L[0]] == 'x':
                             # Change next laser path box to '-', considered hit
                             lazor_array[L[1]+1][L[0]-1] = '-'
@@ -396,12 +403,14 @@ for test_array in Combinations:
                             lazor_array[L[1]+1][L[0]-1] = '-'
                             L[0] += 1
                             L[1] += 1
+
                         # If B block present, send Lazer off the array, essentially ending the process
                         elif test_array[L[1]+1][L[0]] == 'B':
                             lazor_active = False  # Stop processing this Lazor
                             break  # Break out of the inner loop for this Lazor
                     if L[3] == -1:  # If y vector is negative
                         # If block immediately below is open or 'x'
+                        # or L[1] == 1 or L[0] == 1:
                         if test_array[L[1]-1][L[0]] == 'o' or test_array[L[1]-1][L[0]] == 'x':
                             # Change next laser path box to '-', considered hit
                             lazor_array[L[1]-1][L[0]-1] = '-'
@@ -419,6 +428,7 @@ for test_array in Combinations:
                             lazor_array[L[1]-1][L[0]-1] = '-'
                             L[0] -= 1
                             L[1] -= 1
+
                         # If B block present, send Lazer off the array, essentially ending the process
                         elif test_array[L[1]-1][L[0]] == 'B':
                             lazor_active = False  # Stop processing this Lazor
@@ -428,6 +438,7 @@ for test_array in Combinations:
                 if L[2] == 1:  # If x vector is positive
                     if L[3] == 1:  # If y vector is positive
                         # If block immediately right is open or 'x'
+                        # or L[1] == (test_array.shape[0]-2) or L[0] == (test_array.shape[1]-2):
                         if test_array[L[1]][L[0]+1] == 'o' or test_array[L[1]][L[0]+1] == 'x':
                             # Change next laser path box to '-', considered hit
                             lazor_array[L[1]+1][L[0]+1] = '-'
@@ -445,13 +456,15 @@ for test_array in Combinations:
                             lazor_array[L[1]+1][L[0]+1] = '-'
                             L[0] += 1
                             L[1] += 1
+
                         # If B block present, send Lazer off the array, essentially ending the process
                         elif test_array[L[1]][L[0]+1] == 'B':
                             lazor_active = False  # Stop processing this Lazor
                             break  # Break out of the inner loop for this Lazor
 
-                    if L[3] == -1:  # If y vector is positive
+                    if L[3] == -1:  # If y vector is negative
                         # If block immediately right is open or 'x'
+                        # or L[1] == 1 or L[0] == 1::
                         if test_array[L[1]][L[0]+1] == 'o' or test_array[L[1]][L[0]+1] == 'x':
                             # Change next laser path box to '-', considered hit
                             lazor_array[L[1]-1][L[0]+1] = '-'
@@ -469,6 +482,7 @@ for test_array in Combinations:
                             lazor_array[L[1]-1][L[0]+1] = '-'
                             L[0] += 1
                             L[1] -= 1
+
                         # If B block present, send Lazer off the array, essentially ending the process
                         elif test_array[L[1]][L[0]+1] == 'B':
                             lazor_active = False  # Stop processing this Lazor
@@ -493,6 +507,7 @@ for test_array in Combinations:
                             lazor_array[L[1]+1][L[0]-1] = '-'
                             L[0] -= 1
                             L[1] += 1
+
                         # If B block present, send Lazer off the array, essentially ending the process
                         elif test_array[L[1]][L[0]-1] == 'B':
                             lazor_active = False  # Stop processing this Lazor
@@ -517,19 +532,26 @@ for test_array in Combinations:
                             lazor_array[L[1]-1][L[0]-1] = '-'
                             L[0] -= 1
                             L[1] -= 1
+
                         # If B block present, send Lazer off the array, essentially ending the process
                         elif test_array[L[1]][L[0]-1] == 'B':
                             lazor_active = False  # Stop processing this Lazor
                             break  # Break out of the inner loop for this Lazor
 
     count += 1
+    # print(count)
 
     if "t" not in lazor_array:
         print("Solution Found")
-        print(lazor_array)
+    #    print(lazor_array)
+        print(count)
         print(test_array)
+        SOLUTION = test_array
+
+    # if (test_array[1][1] == 'B') & (test_array[3][1] == 'A') & (test_array[5][1] == 'B') & (test_array[7][1] == 'A') & (test_array[9][1] == 'B'):
+    #     SOLUTION = "Success"
     # else:
-    #     print("Solution Found")
+    #     print("Not a Solution")
     #     print(lazor_array)
     #     print(test_array)
 
@@ -541,3 +563,5 @@ end_time = time.time()
 execution_time = end_time - start_time
 print(f"Execution Time: {execution_time:.2f} seconds")
 print("Total unique configurations:", len(formatted_matrices))
+
+print(SOLUTION)
