@@ -24,6 +24,7 @@ To run the solver script:
 Clone repository as above
 
 cd Lazor_project
+
 python FINAL_Mark_Mitch_Combined.py
 
 The script will then ask for a BFF file. Please indicate which file you would like to be solved, including the file format (.bff).
