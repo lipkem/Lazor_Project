@@ -6,7 +6,7 @@ This Python project provides a set of tools to analyze and visualize data relate
 
 ### Prerequisites
 
-- Python 3.8 or higher
+- Python 3.0 or higher
 - Required libraries 
   - Numpy
   - copy
