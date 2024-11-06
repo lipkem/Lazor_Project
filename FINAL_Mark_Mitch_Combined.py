@@ -209,7 +209,7 @@ def main():
 if __name__ == '__main__':
     processor = main()
 
-#######################  MARKS CODE  ###################################
+#########################################################
 
 # Define number of items to place
     num_a = processor.number_of_A
