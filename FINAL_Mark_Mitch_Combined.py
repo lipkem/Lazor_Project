@@ -7,9 +7,9 @@ from itertools import permutations, combinations
 import time
 import re
 
+# Ask for File imput, assign as variable A
+A = input("Enter BFF file for solving (include trailing file format): ")
 
-####################################################################
-A = 'XXXXXXXXXXXX.bff'  #### PLEASE PUT FILE NAME IN PLACE OF Xs####
 ####################################################################
 #### Solution will be output in text file called solution.txt ######
 #### in addition to being printed on the display ###################
