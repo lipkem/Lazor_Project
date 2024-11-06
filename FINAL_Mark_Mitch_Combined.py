@@ -9,7 +9,7 @@ import re
 
 
 ####################################################################
-A = 'XXXXXXXXXXXX.bff'  # PLEASE PUT FILE NAME IN PLACE OF Xs#######
+A = 'XXXXXXXXXXXX.bff'  #### PLEASE PUT FILE NAME IN PLACE OF Xs####
 ####################################################################
 
 # Start the timer
