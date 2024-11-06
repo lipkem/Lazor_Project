@@ -1,20 +1,31 @@
-# Lazor_Project
+# Lazor Project
 
-## Read BFF File
-  ### Find and Read Grid
-    #### Define grid dimenstions and allowed/unallowed space (likely need to double size of grid space to accomodate for lazors and target)
-      #### Even number should indicated the rows/columns in between blocks, odd numbers indicate block location
-      #### Note: even numbers will be unallowed for blocks (probably doesn't need to be coded in output though)
-  ### Find and define blocks and block types
-    
-  ### Find and define laser number, location, and direction
+This Python project provides a set of tools to analyze and visualize data related to healthcare metrics. The tool can process large CSV datasets, perform statistical analysis, and generate visualizations.
 
-  ### Find and define targets (points where lazers need to intersect
+## Installation
 
-  ### Output should be the grid (in an array/matrix), the block types and location, the laser locations and directions, and the target locations
+### Prerequisites
 
-## Solving the Puzzle
-  ### Determine possible laser paths
-  ### Determine possible location of blocks to achieve laser path
-  ### Determine blocks necessary to direct laser to coordinate
-  ### Iterate for each lazer target
+- Python 3.8 or higher
+- Required libraries 
+  - Numpy
+  - copy
+  - itertools (permutations, combinations)
+  - time
+  - re
+
+### Clone the Repository
+
+git clone https://github.com/lipkem/Lazor_Project.git
+
+
+### Usage
+To run the solver script:
+python FINAL_Mark_Mitch_Combined.py
+
+The script will then ask for a BFF file. Please indicate which file you would like to be solved, including the file format (.bff).
+
+The solution output will be printed on the screen and saved as a txt file called solution.txt
+
+### Features
+- Solves Lazor app boards with bff as input file
