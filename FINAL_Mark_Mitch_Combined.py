@@ -558,7 +558,18 @@ execution_time = end_time - start_time
 print(f"Execution Time: {execution_time:.2f} seconds")
 print("Total unique configurations:", len(formatted_matrices))
 
+# Convert expanded grid into new grid cotaining only possible block positions
 Solution_copy = np.array(SOLUTION[1::2, 1::2])
 
+#Print the Solution block in original size
 print("Solution Block Placements:")
 print(Solution_copy)
+
+
+# Convert the array to a formatted string with brackets
+array_string = np.array2string(Solution_copy, separator=', ')
+
+# Write the string to a text file
+filename = 'solution.txt'
+with open(filename, 'w') as file:
+    file.write(array_string)
